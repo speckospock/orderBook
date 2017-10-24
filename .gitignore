@@ -1,3 +1,9 @@
+# Bundles
+dist
+
+#MACOS
+.DS_Store
+
 # Logs
 logs
 *.log
