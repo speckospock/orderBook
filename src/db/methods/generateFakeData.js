@@ -1,4 +1,3 @@
-const { Buy, Sell } = require('..');
 const PD = require('probability-distributions');
 
 /**
@@ -12,27 +11,25 @@ const generateFakeData = quantity => {
   let asks = [];
   //for EURUSD, pick a random start point between $1.00 and $1.40 (a plausible range)
   let initialPrice = 1 + (Math.random() * 0.4);
-  // console.log(initialPrice);
+
   for (let i = 0; i < quantity; i++) {
-    //generate 
-    PD.rlaplace(1000, initialPrice, 0.001, 0.001).forEach(el => {
-      let volume = 1 + parseInt(Math.random() * 10000);
+    //generate 1000 data points
+    PD.rlaplace(1000, initialPrice, 0.001).forEach(el => {
+      let volume = 1 + parseInt(Math.random() * 1000);
       let userId = 1 + parseInt(Math.random() * 100);
-      if (el >= initialPrice) {
-        let price = el.toFixed(4);
+      let price = el.toFixed(4);
+      if (price >= initialPrice) {
         asks.push({ userId, volume, price });
       } else {
-        let price = el.toFixed(4);
         bids.push({ userId, volume, price });
       }
     });
   }
+  console.log('initial: ', initialPrice);
   console.log('bids: ', bids[0], bids.length);
   console.log('asks: ', asks[0], asks.length);
 
-  return { bids, asks };
+  return { bids, asks, initialPrice };
 };
 
-let blah = generateFakeData(1);
-
-module.exports = () => console.log('hi');
+module.exports = generateFakeData;
