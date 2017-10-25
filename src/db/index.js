@@ -36,6 +36,6 @@ export const elasticClient = new elasticsearch.Client({
 //   }
 // });
 const Buy = sequelize.define('buy', orderSchema);
-const Pair = sequelize.define('Pair', pairSchema);
+const Pair = sequelize.define('pair', pairSchema);
 
 Buy.belongsTo(Pair);
