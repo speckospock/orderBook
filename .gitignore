@@ -1,5 +1,6 @@
 # Bundles
 dist
+config.js
 
 #MACOS
 .DS_Store
