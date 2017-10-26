@@ -4,6 +4,7 @@ config.js
 
 #MACOS
 .DS_Store
+src/.DS_Store
 
 # Logs
 logs
