@@ -3,7 +3,6 @@ const elasticsearch = require('elasticsearch');
 const { orderSchema, pairSchema } = require('./schemas');
 const { POSTGRES: { USER, PASSWORD, HOST }} = require('../../config');
 
-
 const sequelize = new Sequelize('orderBook', USER, PASSWORD, {
   host: HOST,
   dialect: 'postgres',
@@ -20,7 +19,6 @@ sequelize
   .catch(err => {
     console.error('Unable to connect to the database:', err);
   });
-
 
 const Buy = sequelize.define('buy', orderSchema);
 const Sell = sequelize.define('sell', orderSchema);
