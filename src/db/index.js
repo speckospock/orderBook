@@ -3,7 +3,7 @@ const elasticsearch = require('elasticsearch');
 const { orderSchema, pairSchema } = require('./schemas');
 const { POSTGRES: { USER, PASSWORD, HOST }} = require('../../config');
 
-export const sequelize = new Sequelize('orderBook', USER, PASSWORD, {
+const sequelize = new Sequelize('orderBook', USER, PASSWORD, {
   host: HOST,
   dialect: 'postgres',
   sync: { force: true },
@@ -20,10 +20,34 @@ sequelize
     console.error('Unable to connect to the database:', err);
   });
 
-export const elasticClient = new elasticsearch.Client({
-  host: 'localhost:9200',
-  log: 'trace'
-});
+const Buy = sequelize.define('buy', orderSchema);
+const Sell = sequelize.define('sell', orderSchema);
+const Pair = sequelize.define('pair', pairSchema);
+
+Pair.sync().then(result => console.log(result));
+
+Buy.belongsTo(Pair, {as: 'pair'});
+Pair.hasMany(Buy);
+Sell.belongsTo(Pair, {as: 'pair'});
+Pair.hasMany(Sell);
+
+Buy.sync().then(result => console.log('Buy Sync', result));
+Sell.sync().then(result => console.log('Sell Sync', result));
+
+module.exports = {
+  Buy,
+  Sell,
+  Pair,
+  sequelize,
+  // elasticClient,
+};
+
+const { generateFakeData } = require('./methods');
+
+// const elasticClient = new elasticsearch.Client({
+//   host: 'localhost:9200',
+//   log: 'trace'
+// });
 
 // elasticClient.ping({
 //   // ping usually has a 3000ms timeout 
@@ -35,7 +59,3 @@ export const elasticClient = new elasticsearch.Client({
 //     console.log('All is well');
 //   }
 // });
-const Buy = sequelize.define('buy', orderSchema);
-const Pair = sequelize.define('pair', pairSchema);
-
-Buy.belongsTo(Pair);
