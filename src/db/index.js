@@ -29,7 +29,9 @@ const Pair = sequelize.define('pair', pairSchema);
 Pair.sync().then(result => console.log(result));
 
 Buy.belongsTo(Pair, {as: 'pair'});
+Pair.hasMany(Buy);
 Sell.belongsTo(Pair, {as: 'pair'});
+Pair.hasMany(Sell);
 
 Buy.sync().then(result => console.log('Buy Sync', result));
 Sell.sync().then(result => console.log('Sell Sync', result));
