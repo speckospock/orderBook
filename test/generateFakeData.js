@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const { generateFakeData } = require('../src/db/methods');
 
 describe('generateFakeData', () => {
-  let num = 1000;
+  let num = 100;
   let generatedData = generateFakeData(num);
   let { bids, asks, initialPrice } = generatedData;
   it('should generate 1000x the input quantity', () => {
@@ -15,3 +15,5 @@ describe('generateFakeData', () => {
     expect(asks[0].price >= initialPrice).to.be.true;
   });
 });
+
+//666666 orders/second throughput

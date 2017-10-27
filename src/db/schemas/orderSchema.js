@@ -1,4 +1,4 @@
-const { INTEGER, DATE } = require('sequelize');
+const { INTEGER, FLOAT } = require('sequelize');
 
 module.exports = {
   orderId: {
@@ -15,11 +15,7 @@ module.exports = {
     allowNull: false,
   },
   price: {
-    type: INTEGER,
-    allowNull: false,
-  },
-  submitted: {
-    type: DATE,
+    type: FLOAT,
     allowNull: false,
   },
 };
