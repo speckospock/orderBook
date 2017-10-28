@@ -64,6 +64,11 @@ Pair.hasMany(Buy);
 Sell.belongsTo(Pair, { as: 'pair' });
 Pair.hasMany(Sell);
 
+
+/////////////////////////////////////////////////////
+// nb: DB queries below WILL MOVE OUT OF THIS FILE //
+/////////////////////////////////////////////////////
+
 //TEST CORE QUERY:
 const topBuys = () => {
   console.log('starting sort');
@@ -89,15 +94,49 @@ const topSells = () => {
     .then(results => console.log('ORDERED: ', results.length, results[0], results[results.length - 1]));
 };
 
+const resolveOrder = ({ id, type }, { vol }) => {
+  if (type === 'BUY') {
+    Buy.findById(id).then(({ dataValues }) => {
+      //compare volume
+      console.log(dataValues);
+      //check if it closes a position
+      //if so, close the position
+      //if not, open a position at this price
+    });
+  }
+  if (type === 'SELL') {
+    Sell.findById(id).then(({ dataValues }) => {
+      //compare volume
+      console.log(dataValues);
+      //check if it closes a position
+      //if so, close the position
+      //if not, open a position at this price
+    });
+  }
+};
+
+const closePosition = () => {
+  //TODO: write me
+};
+
+const openPosition = () => {
+  //TODO: write me
+};
+
 const match = ({ payload: { userId, orderType, vol, price }}) => {
   if (orderType === 'BID') {
     Sell
-      .min('createdAt', { where: { price: { [lte]: price }}})
-      .then(res => console.log('MATCHED: ', res));
+      .min('price')
+      .then(min => Sell.findAll({
+        limit: 10,
+        where: { price: min }, 
+        order: [[sequelize.col('price'), 'ASC'], [sequelize.col('createdAt'), 'ASC']]
+      }))
+      .then(res => console.log('MATCHED: ', res[0].dataValues));
   }
   if (orderType === 'ASK') {
     Buy
-      .max('createdAt', { where: { price: { [gte]: price }}})
+      .max('price')
       .then(res => console.log(res));
   }
 };
@@ -109,15 +148,16 @@ Buy
   // .then(() => Buy.bulkCreate(fakeData.bids))
   // .then(() => Buy.count())
   // .then(results => console.log('BUYS: ', results))
-  .then(() => console.log('startSort'))
-  .then(() => topBuys());
+  // .then(() => console.log('startSort'))
+  // .then(() => topBuys());
   // .then(() => Buy.max('price'))
   // .then(result => console.log('max: ', result));
 
 Sell
   .sync()
-  .then(() => console.log('startSort'))
-  .then(() => topSells());
+  .then(() => resolveOrder({ id: 2516623, type: 'SELL' }, { vol: 220 }));
+  // .then(() => console.log('startSort'))
+  // .then(() => topSells());
   // .then(() => match({ payload: { orderType: 'BID', userId: 2, price: 1.0725, vol: 1}}));
   // .then(() => Sell.min('price'))
   // .then(result => Sell.findAll({ limit: 10, where: { price: result }, order: [[sequelize.col('createdAt'), 'ASC']]}))
