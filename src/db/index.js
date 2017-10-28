@@ -115,12 +115,25 @@ const resolveOrder = ({ id, type }, { vol }) => {
   }
 };
 
+const resolvePosition = () => {
+  // check id to see if there's a position
+  // if so, update/close position as necessary
+  // if not, close the position
+};
+
 const closePosition = () => {
-  //TODO: write me
+  // find position by userId
+  // remove the position from the DB
 };
 
 const openPosition = () => {
-  //TODO: write me
+  // create a position w/ obj passed in
+  // insert into DB
+};
+
+const updatePosition = () => {
+  // find position by userId
+  // update values
 };
 
 const match = ({ payload: { userId, orderType, vol, price }}) => {
