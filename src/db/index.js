@@ -98,6 +98,13 @@ const resolveOrder = ({ id, type }, { vol }) => {
   if (type === 'BUY') {
     Buy.findById(id).then(({ dataValues }) => {
       //compare volume
+      if (vol > dataValues.vol) {
+        // close the order and return remaining volume
+      } else if (vol < dataValues.vol) {
+        // modify the order
+      } else {
+        // close the order and return some indication that that's taken place
+      }
       console.log(dataValues);
       //check if it closes a position
       //if so, close the position
@@ -107,6 +114,13 @@ const resolveOrder = ({ id, type }, { vol }) => {
   if (type === 'SELL') {
     Sell.findById(id).then(({ dataValues }) => {
       //compare volume
+      if (vol > dataValues.vol) {
+        // close the order and return remaining volume
+      } else if (vol < dataValues.vol) {
+        // modify the order
+      } else {
+        // close the order and return some indication that that's taken place
+      }
       console.log(dataValues);
       //check if it closes a position
       //if so, close the position
