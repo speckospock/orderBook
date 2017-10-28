@@ -84,7 +84,7 @@ Pair.hasMany(Sell);
 ////////////////////////////////////////////
 
 // Find the first 10 open orders in the Buy table
-const topBuys = () => {
+const topBuys = callback => {
   console.log('starting sort');
   return Buy
     .max('price')
@@ -93,11 +93,12 @@ const topBuys = () => {
       where: { price: max }, 
       order: [[sequelize.col('price'), 'DESC'], [sequelize.col('createdAt'), 'ASC']]
     }))
-    .then(results => console.log('ORDERED: ', results.length, results[0], results[results.length - 1]));
+    .then(results => callback(results));
 };
+//console.log('ORDERED: ', results.length, results[0], results[results.length - 1])
 
 // Find the first 10 open orders in the Sell table
-const topSells = () => {
+const topSells = callback => {
   console.log('starting sort');
   return Sell
     .min('price')
@@ -106,7 +107,42 @@ const topSells = () => {
       where: { price: min }, 
       order: [[sequelize.col('price'), 'ASC'], [sequelize.col('createdAt'), 'ASC']]
     }))
-    .then(results => console.log('ORDERED: ', results.length, results[0], results[results.length - 1]));
+    .then(results => callback(results));
+};
+
+const processOrder = ({type, order}) => {
+  let { volume, price } = order;
+  if (type === 'BUY') {
+    topBuys(top => {
+      if (price < top[0].price) {
+        Buy.create(order);
+      } else {
+        let remainingVol = volume;
+        let i = 0;
+        while (remainingVol > 0 && i < top.length) {
+          remainingVol = closeOrder(top[i], remainingVol);
+          i++;
+        }
+        if (remainingVol) {
+          //somehow handle this situation where wasn't enough volume to completely resolve order
+        }
+      }
+    });
+  }
+};
+
+const closeOrder = (order, incomingVol, type) => {
+  let { userId, volume, price } = order;
+  if (incomingVol < volume) {
+    let newVolume = volume - incomingVol;
+    resolvePosition({userId, price, volume: incomingVol}, type);
+    order.update({ volume: newVolume });
+    return 0;
+  } else {
+    resolvePosition(order, type);
+    order.destroy();
+    return incomingVol - volume;
+  }
 };
 
 // Handle an incoming order
@@ -122,9 +158,7 @@ const resolveOrder = ({ id, type }, { vol }) => {
         // close the order and return some indication that that's taken place
       }
       console.log(dataValues);
-      //check if it closes a position
-      //if so, close the position
-      //if not, open a position at this price
+      //resolve the position
     });
   }
   if (type === 'SELL') {
@@ -146,7 +180,7 @@ const resolveOrder = ({ id, type }, { vol }) => {
 };
 
 // Handle changes to an open position
-const resolvePosition = () => {
+const resolvePosition = ({userId, price, volume}, type) => {
   // check id to see if there's a position
   // if so, update/close position as necessary
   // if not, close the position
