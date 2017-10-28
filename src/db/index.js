@@ -9,6 +9,11 @@ const { gte, lte } = Sequelize.Op;
 //bid/ask vol are the total of all new orders w/in that time period plus the total of all resolved orders w/in that time period
 //in other words, vol movements
 
+/////////////////////////////
+// Sequelize setup/DB init //
+/////////////////////////////
+
+// setup Postgres
 const sequelize = new Sequelize('orderBook', USER, PASSWORD, {
   host: HOST,
   dialect: 'postgres',
@@ -18,6 +23,7 @@ const sequelize = new Sequelize('orderBook', USER, PASSWORD, {
   logging: false,
 });
 
+// confirm that the connection went through
 sequelize
   .authenticate()
   .then(() => {
@@ -27,6 +33,11 @@ sequelize
     console.error('Unable to connect to the database:', err);
   });
 
+/////////////////////////
+// DB model definition //
+/////////////////////////
+
+// define a bids table, indexed on price and timestamp for fast queries
 const Buy = sequelize.define('buy', orderSchema, {
   indexes: [ // A BTREE index with a ordered field
     {
@@ -35,6 +46,8 @@ const Buy = sequelize.define('buy', orderSchema, {
     }
   ]
 });
+
+// define an asks table, indexed on price and timestamp for fast queries
 const Sell = sequelize.define('sell', orderSchema, {
   indexes: [ // A BTREE index with a ordered field
     {
@@ -43,7 +56,11 @@ const Sell = sequelize.define('sell', orderSchema, {
     }
   ]
 });
+
+// define a simple table to store the valid instruments
 const Pair = sequelize.define('pair', pairSchema);
+
+// define a table for open user positions
 const Position = sequelize.define('position', positionSchema, {
   indexes: [
     {
@@ -53,23 +70,20 @@ const Position = sequelize.define('position', positionSchema, {
   ]
 });
 
-Pair
-  .sync()
-  .then(result => console.log(result))
-  .then(() => Pair.findAll())
-  .then(([{ dataValues }]) => console.log(dataValues));
+Pair.sync();
 
+// set up one-to-many relationships b/w Pair->Buy and Pair->Sell
 Buy.belongsTo(Pair, { as: 'pair' });
 Pair.hasMany(Buy);
 Sell.belongsTo(Pair, { as: 'pair' });
 Pair.hasMany(Sell);
 
 
-/////////////////////////////////////////////////////
-// nb: DB queries below WILL MOVE OUT OF THIS FILE //
-/////////////////////////////////////////////////////
+////////////////////////////////////////////
+// Database query functions (TO BE MOVED) //
+////////////////////////////////////////////
 
-//TEST CORE QUERY:
+// Find the first 10 open orders in the Buy table
 const topBuys = () => {
   console.log('starting sort');
   return Buy
@@ -82,6 +96,7 @@ const topBuys = () => {
     .then(results => console.log('ORDERED: ', results.length, results[0], results[results.length - 1]));
 };
 
+// Find the first 10 open orders in the Sell table
 const topSells = () => {
   console.log('starting sort');
   return Sell
@@ -94,6 +109,7 @@ const topSells = () => {
     .then(results => console.log('ORDERED: ', results.length, results[0], results[results.length - 1]));
 };
 
+// Handle an incoming order
 const resolveOrder = ({ id, type }, { vol }) => {
   if (type === 'BUY') {
     Buy.findById(id).then(({ dataValues }) => {
@@ -129,27 +145,34 @@ const resolveOrder = ({ id, type }, { vol }) => {
   }
 };
 
+// Handle changes to an open position
 const resolvePosition = () => {
   // check id to see if there's a position
   // if so, update/close position as necessary
   // if not, close the position
 };
 
+// Close an open position
 const closePosition = () => {
   // find position by userId
   // remove the position from the DB
+  // Send message to SQS with profit info
 };
 
+// Open a new user position
 const openPosition = () => {
   // create a position w/ obj passed in
   // insert into DB
 };
 
+// Modify an existing position
 const updatePosition = () => {
   // find position by userId
   // update values
+  // Send message to SQS with profit info
 };
 
+// Match an incoming order with an existing order
 const match = ({ payload: { userId, orderType, vol, price }}) => {
   if (orderType === 'BID') {
     Sell
@@ -168,6 +191,11 @@ const match = ({ payload: { userId, orderType, vol, price }}) => {
   }
 };
 
+////////////////////////////////////
+// Start DB actions (TO BE MOVED) //
+////////////////////////////////////
+
+// Uncomment to generate data upon start:
 // let fakeData = generateFakeData(1000);
 
 Buy
@@ -194,7 +222,7 @@ Sell
   // .then(results => console.log('SELLS: ', results));
 
 
-
+//export DB tables
 module.exports = {
   Buy,
   Sell,
@@ -204,6 +232,10 @@ module.exports = {
 };
 
 // const { generateFakeData } = require('./methods');
+
+////////////////////
+// Elastic search //
+////////////////////
 
 // const elasticClient = new elasticsearch.Client({
 //   host: 'localhost:9200',
