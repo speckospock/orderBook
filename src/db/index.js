@@ -115,12 +115,28 @@ const processOrder = ({type, order}) => {
   if (type === 'BUY') {
     topBuys(top => {
       if (price < top[0].price) {
-        Buy.create(order);
+        Buy.create(order).then(result => console.log(result));
       } else {
         let remainingVol = volume;
         let i = 0;
         while (remainingVol > 0 && i < top.length) {
-          remainingVol = closeOrder(top[i], remainingVol);
+          remainingVol = closeOrder(top[i], remainingVol, type);
+          i++;
+        }
+        if (remainingVol) {
+          //somehow handle this situation where wasn't enough volume to completely resolve order
+        }
+      }
+    });
+  } else if (type === 'SELL') {
+    topSells(top => {
+      if (price > top[0].price) {
+        Sell.create(order).then(result => console.log(result));
+      } else {
+        let remainingVol = volume;
+        let i = 0;
+        while (remainingVol > 0 && i < top.length) {
+          remainingVol = closeOrder(top[i], remainingVol, type);
           i++;
         }
         if (remainingVol) {
