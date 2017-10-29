@@ -16,7 +16,8 @@ module.exports = {
   price: {
     type: FLOAT
   },
-  //an array of orders, in order, to resolve 
+  //an array of orders, in order, to resolve
+  //TODO: figure out if this is the best way to do it
   orders: {
     type: JSONB
   }
