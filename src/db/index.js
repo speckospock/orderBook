@@ -39,7 +39,7 @@ sequelize
 
 // define a bids table, indexed on price and timestamp for fast queries
 const Buy = sequelize.define('buy', orderSchema, {
-  indexes: [ // A BTREE index with a ordered field
+  indexes: [ // A BTREE index with an ordered field
     {
       method: 'BTREE',
       fields: ['price', 'createdAt']
@@ -49,7 +49,7 @@ const Buy = sequelize.define('buy', orderSchema, {
 
 // define an asks table, indexed on price and timestamp for fast queries
 const Sell = sequelize.define('sell', orderSchema, {
-  indexes: [ // A BTREE index with a ordered field
+  indexes: [ // A BTREE index with an ordered field
     {
       method: 'BTREE',
       fields: ['price', 'createdAt']
@@ -128,15 +128,12 @@ const openPosition = ({userId, price, volume, type}) => {
 // Modify an existing position
 const updatePosition = ({ userId, price, volume, type }) => {
   console.log('type: ', type);
+  //convert the type name
   type = (type === 'BUY') ? 'long' : 'short';
   console.log('type: ', type);
   // find position by userId
   Position.findById(userId)
     .then(result => {
-      // if (!result) {
-      //   type = (type === 'long') ? 'BUY' : 'SELL';
-      //   openPosition({ userId, price, volume, type });
-      // }
       //if position type is the same as parameter, we add it to the list
       if (result.dataValues.type === type) {
         console.log(result.dataValues.orders);
@@ -162,43 +159,70 @@ const updatePosition = ({ userId, price, volume, type }) => {
       //if position type is different, we need to resolve order
       } else {
         let profit = 0;
-        let orders = [...result.dataValues.orders];
-        for (let vol = 0; vol <= volume; vol) {
-          let order = orders.shift();
-          if (type === 'long') {
-            if (vol + order.volume <= volume) {
-              profit += (order.price - price) * order.volume;
-              vol += order.volume;
-            } else {
-              profit += (order.price - price) * (volume - vol);
-              vol += order.volume;
-              // console.log(order);
-              orders.unshift({ price: order.price, volume: (volume - vol)});
-            }
+        //destroy or reverse the position if the order >= current position size
+        if (volume >= result.dataValues.volume) {
+          // let newType;
+          if (result.dataValues.type === 'long') {
+            profit = ((price - result.dataValues.price) * result.dataValues.volume).toFixed(4);
+            // newType = 'short';
           } else {
-            if (vol + order.volume <= volume) {
-              profit += (price - order.price) * order.volume;
-              vol += order.volume;
+            profit = ((result.dataValues.price - price) * result.dataValues.volume).toFixed(4);
+            // newType = 'long';
+          }
+          //report the profit
+          console.log('profit: ', profit);
+          if (volume > result.dataValues.volume) {
+            let newVolume = volume - result.dataValues.volume;
+            result.update({
+              price,
+              type,
+              volume: newVolume,
+              orders: [{ price, volume: newVolume }],
+            });
+          } else {
+            result.destroy();
+          }
+        } else {
+          let orders = [...result.dataValues.orders];
+          console.log('orders: ', orders);
+          for (let vol = 0; vol <= volume; vol) {
+            let order = orders.shift();
+            console.log('order: ', order);
+            if (type === 'long') {
+              if (vol + order.volume <= volume) {
+                profit += (order.price - price) * order.volume;
+                vol += order.volume;
+              } else {
+                profit += (order.price - price) * (volume - vol);
+                vol += order.volume;
+                // console.log(order);
+                orders.unshift({ price: order.price, volume: (volume - vol)});
+              }
             } else {
-              profit += (price - order.price) * (volume - vol);
-              vol += order.volume;
-              orders.unshift({ price: order.price, volume: (volume - vol)});
+              if (vol + order.volume <= volume) {
+                profit += (price - order.price) * order.volume;
+                vol += order.volume;
+              } else {
+                profit += (price - order.price) * (volume - vol);
+                vol += order.volume;
+                orders.unshift({ price: order.price, volume: (volume - vol)});
+              }
             }
           }
-        }
-        if (orders.length) {
-          let newInfo = orders.reduce((memo, el) => {
-            memo.priceSum += el.price;
-            memo.volSum += el.volume;
-            return memo;
-          }, { priceSum: 0, volSum: 0 });
-          result.update({
-            price: (newInfo.priceSum / orders.length),
-            volume: (newInfo.volSum / orders.length),
-            orders: [...orders],
-          }).then(res => console.log(res));
-        } else {
-          // result.destroy();
+          if (orders.length) {
+            let newInfo = orders.reduce((memo, el) => {
+              memo.priceSum += el.price;
+              memo.volSum += el.volume;
+              return memo;
+            }, { priceSum: 0, volSum: 0 });
+            result.update({
+              price: (newInfo.priceSum / orders.length),
+              volume: (newInfo.volSum / orders.length),
+              orders: [...orders],
+            }).then(res => console.log(res));
+          } else {
+            // result.destroy();
+          }
         }
       }
     });
@@ -224,7 +248,8 @@ const resolvePosition = ({userId, price, volume}, type) => {
   // if not, close the position
 };
 
-// resolvePosition({ userId: 2, price: 1.0725, volume: 1 }, 'SELL');
+// resolvePosition({ userId: 2, price: 1.0725, volume: 1 }, 'BUY');
+Position.find({where: {userId: 2}}).then(res => console.log(res.dataValues)).catch(() => console.log('not found'));
 
 // Close an open position
 const closePosition = () => {
@@ -356,7 +381,15 @@ module.exports = {
   Sell,
   Pair,
   sequelize,
+  topBuys,
+  topSells,
+  processOrder,
+  closeOrder,
   resolveOrder,
+  openPosition,
+  updatePosition,
+  closePosition,
+
   // elasticClient,
 };
 
