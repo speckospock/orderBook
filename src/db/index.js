@@ -70,6 +70,7 @@ const Position = sequelize.define('position', positionSchema, {
   ]
 });
 
+// Position.sync({force:true});
 Position.sync();
 Pair.sync();
 
@@ -146,11 +147,11 @@ const updatePosition = ({ userId, price, volume, type }) => {
         // console.log('would write ', [...result.dataValues.orders, { price, volume }]);
         console.log('hi hi', result.dataValues);
         console.log('calculated price: ', (newInfo.priceSum / (result.dataValues.orders.length + 1)));
-        console.log('calculated volume: ', (newInfo.volSum / (result.dataValues.orders.length + 1)));
+        console.log('calculated volume: ', newInfo.volSum);
 
         Position.update({
           price: (newInfo.priceSum / (result.dataValues.orders.length + 1)).toFixed(4),
-          volume: (newInfo.volSum / (result.dataValues.orders.length + 1)),
+          volume: newInfo.volSum,
           orders: [...result.dataValues.orders, { price, volume }],
         }, {
           where: { userId },
@@ -161,13 +162,10 @@ const updatePosition = ({ userId, price, volume, type }) => {
         let profit = 0;
         //destroy or reverse the position if the order >= current position size
         if (volume >= result.dataValues.volume) {
-          // let newType;
           if (result.dataValues.type === 'long') {
             profit = ((price - result.dataValues.price) * result.dataValues.volume).toFixed(4);
-            // newType = 'short';
           } else {
             profit = ((result.dataValues.price - price) * result.dataValues.volume).toFixed(4);
-            // newType = 'long';
           }
           //report the profit
           console.log('profit: ', profit);
@@ -185,30 +183,34 @@ const updatePosition = ({ userId, price, volume, type }) => {
         } else {
           let orders = [...result.dataValues.orders];
           console.log('orders: ', orders);
-          for (let vol = 0; vol <= volume; vol) {
+          for (let vol = 0; vol < volume; vol) {
             let order = orders.shift();
             console.log('order: ', order);
+            console.log('vol: ', vol);
+            console.log('volume: ', volume);
+            console.log('order vol: ', order.volume);
             if (type === 'long') {
               if (vol + order.volume <= volume) {
-                profit += (order.price - price) * order.volume;
+                profit += ((order.price - price) * order.volume).toFixed(4);
                 vol += order.volume;
               } else {
-                profit += (order.price - price) * (volume - vol);
-                vol += order.volume;
+                profit += ((order.price - price) * (volume - vol)).toFixed(4);
+                vol += volume;
+                orders.unshift({ price: order.price, volume: (order.volume - vol)});
                 // console.log(order);
-                orders.unshift({ price: order.price, volume: (volume - vol)});
               }
             } else {
-              if (vol + order.volume <= volume) {
-                profit += (price - order.price) * order.volume;
+              if (vol + order.volume < volume) {
+                profit += ((price - order.price) * order.volume).toFixed(4);
                 vol += order.volume;
               } else {
-                profit += (price - order.price) * (volume - vol);
-                vol += order.volume;
-                orders.unshift({ price: order.price, volume: (volume - vol)});
+                profit += ((price - order.price) * (volume - vol)).toFixed(4);
+                vol += volume;
+                orders.unshift({ price: order.price, volume: (order.volume - vol)});
               }
             }
           }
+          console.log('profit: ', profit);
           if (orders.length) {
             let newInfo = orders.reduce((memo, el) => {
               memo.priceSum += el.price;
@@ -217,11 +219,11 @@ const updatePosition = ({ userId, price, volume, type }) => {
             }, { priceSum: 0, volSum: 0 });
             result.update({
               price: (newInfo.priceSum / orders.length),
-              volume: (newInfo.volSum / orders.length),
+              volume: newInfo.volSum,
               orders: [...orders],
-            }).then(res => console.log(res));
+            }).then(res => console.log(res.dataValues));
           } else {
-            // result.destroy();
+            result.destroy();
           }
         }
       }
@@ -248,7 +250,7 @@ const resolvePosition = ({userId, price, volume}, type) => {
   // if not, close the position
 };
 
-// resolvePosition({ userId: 2, price: 1.0725, volume: 1 }, 'BUY');
+// resolvePosition({ userId: 2, price: 1.0725, volume: 1 }, 'SELL');
 Position.find({where: {userId: 2}}).then(res => console.log(res.dataValues)).catch(() => console.log('not found'));
 
 // Close an open position
