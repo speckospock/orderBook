@@ -377,7 +377,7 @@ const processOrder = ({ type, order }) => {
   }
 };
 
-processOrder({type: 'SELL', order: { price: 1.01, volume: 20000, userId: 1, }});
+// processOrder({type: 'SELL', order: { price: 1.01, volume: 1, userId: 1, }});
 
 // Handle an incoming order
 const resolveOrder = ({ id, type }, { vol }) => {

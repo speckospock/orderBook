@@ -1,9 +1,25 @@
 process.env.NODE_ENV = 'development';
 
+const AWS = require('aws-sdk');
 const { Buy, Sell, Pair, topBuys, topSells } = require('../db');
 const { generateFakeData } = require('../db/methods');
 
 //TODO: setup connection to SQS
+// Load credentials and set the region from the JSON file
+AWS.config.loadFromPath('./config.json');
+
+const sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
+
+var params = {};
+
+sqs.listQueues(params, function(err, data) {
+  if (err) {
+    console.log('Error', err);
+  } else {
+    console.log('Success', data.QueueUrls);
+  }
+});
+
 //TODO: handle incoming orders
 //TODO: form outgoing profit messages
 
