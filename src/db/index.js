@@ -191,7 +191,8 @@ const updatePosition = ({ userId, price, volume, type }) => {
         } else {
           let orders = [...result.dataValues.orders];
           console.log('orders: ', orders);
-          for (let vol = 0; vol < volume; vol) {
+          let vol = 0;
+          while (vol < volume) {
             let order = orders.shift();
             console.log('order: ', order);
             console.log('vol: ', vol);
@@ -275,11 +276,11 @@ const closeOrder = (order, incomingVol, type) => {
   if (incomingVol < volume) {
     let newVolume = volume - incomingVol;
     resolvePosition({userId, price, volume: incomingVol}, type);
-    // order.update({ volume: newVolume });
+    order.update({ volume: newVolume });
     return 0;
   } else {
     resolvePosition({ userId, price, volume }, type);
-    // order.destroy();
+    order.destroy();
     return incomingVol - volume;
   }
 };
