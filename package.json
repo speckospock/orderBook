@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha",
     "build": "webpack -d --watch",
-    "start": "node dist/bundle.js"
+    "start": "set NODE_ENV=development && node dist/bundle.js"
   },
   "repository": {
     "type": "git",
