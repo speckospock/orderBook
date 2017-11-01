@@ -1,5 +1,7 @@
-// import '../db';
-const { Buy, Sell, resolveOrder } = require('../db');
+process.env.NODE_ENV = 'development';
+
+const { Buy, Sell, Pair, topBuys, topSells } = require('../db');
+const { generateFakeData } = require('../db/methods');
 
 //TODO: setup connection to SQS
 //TODO: handle incoming orders
@@ -11,31 +13,61 @@ const { Buy, Sell, resolveOrder } = require('../db');
 //////////////////////
 
 // Uncomment to generate data upon start (REQUIRES DB WRITE):
-// let fakeData = generateFakeData(1000);
+// console.time('fakeData');
+// let fakeData = generateFakeData(1000, 1.2);
+// console.timeEnd('fakeData');
 
 Buy
   .sync()
   // .then(() => Buy.min('price'))
   // .then(res => console.log(res));
-// .then(() => Buy.bulkCreate(fakeData.bids))
-// .then(() => Buy.count())
-// .then(results => console.log('BUYS: ', results))
+  // .then(() => {
+  //   console.time('buys');
+  //   return Buy.bulkCreate(fakeData.bids);
+  // })
+  // .then(() => {
+  //   // console.timeEnd('buys');
+  //   console.time('buysCount');
+  //   return Buy.count();
+  // })
+  // .then(results => {
+  //   console.timeEnd('buysCount');
+  //   console.log('BUYS: ', results);
+  // });
 // .then(() => console.log('startSort'))
-// .then(() => topBuys());
+  // .then(() => {
+  //   console.time('topBuys');
+  //   topBuys(res => console.log(res[0]));
+  //   console.timeEnd('topBuys');
+  // });
 // .then(() => Buy.max('price'))
 // .then(result => console.log('max: ', result));
 
 Sell
   .sync()
-  .then(() => resolveOrder({ id: 2516623, type: 'SELL' }, { vol: 220 }));
+  // .then(() => resolveOrder({ id: 2516623, type: 'SELL' }, { vol: 220 }));
 // .then(() => console.log('startSort'))
-// .then(() => topSells());
+  // .then(() => {
+  //   console.time('topSells');
+  //   topSells(res => console.log(res[0]));
+  //   console.timeEnd('topSells');
+  // });
 // .then(() => match({ payload: { orderType: 'BID', userId: 2, price: 1.0725, vol: 1}}));
 // .then(() => Sell.min('price'))
 // .then(result => Sell.findAll({ limit: 10, where: { price: result }, order: [[sequelize.col('createdAt'), 'ASC']]}))
 // .then(results => console.log(results));
-// .then(() => Sell.bulkCreate(fakeData.asks))
-// .then(() => Sell.count())
-// .then(results => console.log('SELLS: ', results));
+  // .then(() => {
+  //   console.time('sells');
+  //   return Sell.bulkCreate(fakeData.asks);
+  // })
+  // .then(() => {
+  //   // console.timeEnd('sells');
+  //   console.time('sellCount');
+  //   return Sell.count();
+  // })
+  // .then(results => {
+  //   console.timeEnd('sellCount');
+  //   console.log('SELLS: ', results);
+  // });
 
 console.log('Hello World');

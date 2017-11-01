@@ -1,6 +1,8 @@
+process.env.NODE_ENV = 'test';
+
 const { expect, should } = require('chai');
 const { topBuys } = require('./mockMethods');
-const { Buy, Sell, Pair } = require('./setup');
+const { Buy, Sell, Pair } = require('../src/db');
 
 
 describe('hooks', function() {

@@ -1,3 +1,4 @@
+process.env.NODE_ENV = 'test';
 const { expect } = require('chai');
 const { generateFakeData } = require('../src/db/methods');
 
@@ -16,4 +17,4 @@ describe('generateFakeData', function() {
   });
 });
 
-//666666 orders/second throughput
+//~666666 orders/second throughput
