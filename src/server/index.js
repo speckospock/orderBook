@@ -16,11 +16,18 @@ const sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
 
 const Consumer = require('sqs-consumer');
 
+// processOrder({order: { userId: 123456789, volume: 1, price: 1.2209 }, type: 'BUY'});
+
 const app = Consumer.create({
   queueUrl: sqsUrls.ordersRequest,
+  batchSize: 5,
   handleMessage: (message, done) => {
     console.log(message);
-    processOrder(message.Body);
+    //JSON parse the order
+    let theOrder = JSON.parse(message.Body);
+    //convert price to float
+    theOrder.order.price = parseFloat(theOrder.order.price);
+    processOrder(theOrder);
     done();
   }
 });
@@ -30,41 +37,6 @@ app.on('error', (err) => {
 });
 
 app.start();
-// const queueListen = () => {
-
-//   let params = {
-//     QueueUrl: sqsUrls.ordersRequest,
-//     MaxNumberOfMessages: 1,
-//     AttributeNames: ['All'],
-//     // WaitTimeSeconds: 20,
-//   };
-
-//   sqs.receiveMessage(params, (err, data) => {
-//     if (err) {
-//       console.log(err, err.stack); // an error occurred
-//     } else {
-//       if (data.Messages) {
-//         console.log(data.Messages);           // successful response
-//         console.log('keys: ', Object.keys(data));
-//         console.log('attributes: ', data.Messages[0].Attributes);
-//         sqs.deleteMessage({
-//           QueueUrl: sqsUrls.ordersRequest,
-//           ReceiptHandle: data.Messages[0].ReceiptHandle,
-//         }, (err, data) => {
-//           if (err) {
-//             console.log('there were an error', err, err.stack);
-//           } else {
-//             console.log('deleted: ', data);
-//           }
-//         });
-//       } else {
-//         console.log('no messages...', data);
-//       }
-//     }
-//   });
-// };
-
-// setInterval(queueListen, 2500);
 
 //TODO: handle incoming orders
 //TODO: form outgoing profit messages

@@ -44,4 +44,6 @@ const generateOrders = () => {
   });
 };
 
-setInterval(generateOrders, 5000);
+// generateOrders();
+
+setInterval(generateOrders, 100);
