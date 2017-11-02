@@ -1,8 +1,12 @@
 process.env.NODE_ENV = 'development';
 
 const AWS = require('aws-sdk');
-const { Buy, Sell, Pair, topBuys, topSells } = require('../db');
+const { Buy, Sell, Pair, topBuys, topSells, processOrder } = require('../db');
 const { generateFakeData } = require('../db/methods');
+
+const sqsUrls = {
+  ordersRequest: 'https://sqs.us-west-2.amazonaws.com/179737091880/ordersrequest.fifo',
+};
 
 //TODO: setup connection to SQS
 // Load credentials and set the region from the JSON file
@@ -10,15 +14,57 @@ AWS.config.loadFromPath('./config.json');
 
 const sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
 
-var params = {};
+const Consumer = require('sqs-consumer');
 
-sqs.listQueues(params, function(err, data) {
-  if (err) {
-    console.log('Error', err);
-  } else {
-    console.log('Success', data.QueueUrls);
+const app = Consumer.create({
+  queueUrl: sqsUrls.ordersRequest,
+  handleMessage: (message, done) => {
+    console.log(message);
+    processOrder(message.Body);
+    done();
   }
 });
+
+app.on('error', (err) => {
+  console.log(err.message);
+});
+
+app.start();
+// const queueListen = () => {
+
+//   let params = {
+//     QueueUrl: sqsUrls.ordersRequest,
+//     MaxNumberOfMessages: 1,
+//     AttributeNames: ['All'],
+//     // WaitTimeSeconds: 20,
+//   };
+
+//   sqs.receiveMessage(params, (err, data) => {
+//     if (err) {
+//       console.log(err, err.stack); // an error occurred
+//     } else {
+//       if (data.Messages) {
+//         console.log(data.Messages);           // successful response
+//         console.log('keys: ', Object.keys(data));
+//         console.log('attributes: ', data.Messages[0].Attributes);
+//         sqs.deleteMessage({
+//           QueueUrl: sqsUrls.ordersRequest,
+//           ReceiptHandle: data.Messages[0].ReceiptHandle,
+//         }, (err, data) => {
+//           if (err) {
+//             console.log('there were an error', err, err.stack);
+//           } else {
+//             console.log('deleted: ', data);
+//           }
+//         });
+//       } else {
+//         console.log('no messages...', data);
+//       }
+//     }
+//   });
+// };
+
+// setInterval(queueListen, 2500);
 
 //TODO: handle incoming orders
 //TODO: form outgoing profit messages
