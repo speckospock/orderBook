@@ -1,8 +1,8 @@
 process.env.NODE_ENV = 'development';
 
 const AWS = require('aws-sdk');
-const { Buy, Sell, Pair, topBuys, topSells, processOrder } = require('../db');
-const { generateFakeData } = require('../db/methods');
+const { Buy, Sell, Pair } = require('../db');
+const { topBuys, topSells, processOrder, generateFakeData } = require('../db/methods');
 
 const sqsUrls = {
   ordersRequest: 'https://sqs.us-west-2.amazonaws.com/179737091880/ordersrequest.fifo',

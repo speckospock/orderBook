@@ -1,5 +1,6 @@
 const AWS = require('aws-sdk');
 const { generateFakeData } = require('../db/methods');
+const { elasticClient } = require('../../workers/elasticSetup');
 
 const sqsUrls = {
   ordersRequest: 'https://sqs.us-west-2.amazonaws.com/179737091880/ordersrequest.fifo',
@@ -27,23 +28,52 @@ const randomOrder = price => {
 };
 
 const generateOrders = () => {
+  let order = randomOrder(1.2);
   let params = {
-    MessageBody: JSON.stringify(randomOrder(1.2)),
+    MessageBody: JSON.stringify(order),
     QueueUrl: sqsUrls.ordersRequest,
     DelaySeconds: 0,
     MessageGroupId: 'EURUSD',
     // MessageDeduplicationId: `${messageId++}`,
   };
   
+  let { type } = order;
+  let { userId, volume, price } = order.order;
+  
   sqs.sendMessage(params, function(err, data) {
     if (err) {
       console.log(err, err.stack); // an error occurred
     } else {
-      console.log(data); // successful response
+      console.log(data.MessageId); // successful response
+      elasticClient.index({
+        type,
+        id: data.MessageId,
+        index: 'orders',
+        body: {
+          userId,
+          volume,
+          price: parseFloat(price),
+        }
+      }).then((err, res) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(res);
+        }
+      });
     }
   });
 };
 
+// elasticClient.indices
+//   .create({ index: 'orders' })
+//   .then((err, res, status) => {
+//     if (err) {
+//       console.log(err);
+//     } else {
+//       console.log('created orders: ', res);
+//     }
+//   });
 // generateOrders();
 
-setInterval(generateOrders, 100);
+setInterval(generateOrders, 1000);
