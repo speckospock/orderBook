@@ -1,8 +1,8 @@
-const { Position } = require('..');
-const { openPosition, updatePosition } = require('.');
+import { Position } from '..';
+import { openPosition, updatePosition } from '.';
 
 // Create or update a position to reflect a completed order
-module.exports = ({userId, price, volume}, type) => {
+const resolvePosition = ({userId, price, volume}, type) => {
   // check id to see if the user has an existing position
   Position.findById(userId)
     .then(result => {
@@ -17,3 +17,5 @@ module.exports = ({userId, price, volume}, type) => {
       }
     });
 };
+
+export default resolvePosition;

@@ -1,7 +1,9 @@
-const { Sell, sequelize } = require('..');
+import { Sell, sequelize } from '..';
+
+console.log('sell: ', Sell);
 
 // Find the first 10 open orders in the Sell table
-module.exports = callback => {
+const topSells = callback => {
   // console.log('starting sort');
   return Sell
     .min('price')
@@ -12,3 +14,5 @@ module.exports = callback => {
     }))
     .then(results => callback(results));
 };
+
+export default topSells;

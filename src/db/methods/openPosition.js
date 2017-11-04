@@ -1,20 +1,22 @@
-const { Position } = require('..');
-const { elasticClient } = require('../../../workers/elasticSetup');
+import { Position } from '..';
+import { elasticClient } from '../../../workers/elasticSetup';
 
 // Open a new user position
-module.exports = openPosition = ({userId, price, volume, type}) => {
+const openPosition = ({userId, price, volume, type}) => {
   type = (type === 'BUY') ? 'long' : 'short';
   // create a position w/ obj passed in
   // save to DB
-  elasticClient.index({
-    type,
-    id: userId,
-    index: 'positions',
-    body: {
-      price,
-      volume
-    }
-  });
+  if (process.env.NODE_ENV === 'development') {
+    elasticClient.index({
+      type,
+      id: userId,
+      index: 'positions',
+      body: {
+        price,
+        volume
+      }
+    });
+  }
   return Position.create({
     userId,
     price,
@@ -23,3 +25,5 @@ module.exports = openPosition = ({userId, price, volume, type}) => {
     orders: [{ price, volume }],
   });
 };
+
+export default openPosition;

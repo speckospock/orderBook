@@ -1,7 +1,7 @@
-const { Buy, sequelize } = require('..');
+import { Buy, sequelize } from '..';
 
 // Find the first 10 open orders in the Buy table
-module.exports = (callback) => {
+const topBuys = callback => {
   // console.log('starting sort');
   return Buy
     .max('price')
@@ -12,3 +12,5 @@ module.exports = (callback) => {
     }))
     .then(results => callback(results));
 };
+
+export default topBuys;

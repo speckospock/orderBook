@@ -23,7 +23,7 @@ console.log(selectedDB);
 const sequelize = new Sequelize(selectedDB, USER, PASSWORD, {
   host: HOST,
   dialect: 'postgres',
-  sync: { force: true },
+  // sync: { force: true },
   syncOnAssociation: true,
   pool: { maxConnections: 50, maxIdleTime: 150},
   logging: false,
@@ -86,10 +86,16 @@ Pair.hasMany(Buy);
 Sell.belongsTo(Pair, { as: 'pair' });
 Pair.hasMany(Sell);
 
+Buy.sync();
+Sell.sync();
+
+// console.log('From Index: ', Buy);
+
 //export DB tables
-module.exports = {
+export {
   Buy,
   Sell,
   Pair,
+  Position,
   sequelize,
 };

@@ -1,8 +1,10 @@
-const { Buy, Sell, Position } = require('..');
-const { topBuys, topSells, resolvePosition, processOrder, closeOrder } = require('.');
+import { Buy, Sell, Position } from '..';
+import { topBuys, topSells, resolvePosition, closeOrder } from '.';
+
+// console.log('HI SELL: ', Sell);
 
 // Handle an incoming order from the queue/HTTP request
-module.exports = ({ type, order }) => {
+const processOrder = ({ type, order }) => {
   let { userId, volume, price } = order;
   // console.log('SAW', volume, price);
   // if the order is to buy, try to find a matching sell order or add it to the buy list
@@ -14,9 +16,7 @@ module.exports = ({ type, order }) => {
       // if price is less than the best sell price listed, we know there's no match
       if (price < top[0].price) {
         // console.log('below best price, creating new order');
-        Buy.create(order).then(result => {
-          // console.log(result)
-        });
+        return Buy.create(order);
       // if price is greater than the best sell price listed, we match the order
       } else {
         // console.log('above best price, resolving order');
@@ -55,9 +55,7 @@ module.exports = ({ type, order }) => {
       // if price is greater than the best buy price listed, we know there's no match
       if (price > top[0].price) {
         // console.log('above best price, creating new order');        
-        Sell.create(order).then(result => {
-          // console.log('SELL RESULT: ', result)
-        });
+        return Sell.create(order);
       // if price is less than the best buy price listed, we match the order
       } else {
         // console.log('beats best price, resolving order');        
@@ -89,3 +87,5 @@ module.exports = ({ type, order }) => {
     });
   }
 };
+
+export default processOrder;

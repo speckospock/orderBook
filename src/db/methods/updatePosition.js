@@ -1,8 +1,8 @@
-const { Position } = require('..');
-const { elasticClient } = require('../../../workers/elasticSetup');
+import { Position } from '..';
+import { elasticClient } from '../../../workers/elasticSetup';
 
 // Modify an existing position
-module.exports = ({ userId, price, volume, type }) => {
+const updatePosition = ({ userId, price, volume, type }) => {
   // console.log('type: ', type);
   // convert the type name
   type = (type === 'BUY') ? 'long' : 'short';
@@ -53,15 +53,17 @@ module.exports = ({ userId, price, volume, type }) => {
           if (volume > result.dataValues.volume) {
             //calculate the new sum of order prices and volumes to determine new overall position
             let newVolume = volume - result.dataValues.volume;
-            elasticClient.index({
-              type,
-              id: userId,
-              index: 'positions',
-              body: {
-                price,
-                volume: newVolume,
-              }
-            });
+            if (process.env.NODE_ENV === 'development') {
+              elasticClient.index({
+                type,
+                id: userId,
+                index: 'positions',
+                body: {
+                  price,
+                  volume: newVolume,
+                }
+              });
+            }
             result.update({
               price,
               type,
@@ -120,15 +122,17 @@ module.exports = ({ userId, price, volume, type }) => {
               return memo;
             }, { priceSum: 0, volSum: 0 });
             // write the new total volume and average price to the position
-            elasticClient.index({
-              type,
-              id: userId,
-              index: 'positions',
-              body: {
-                price,
-                volume: newVolume,
-              }
-            });
+            if (process.env.NODE_ENV === 'development') {
+              elasticClient.index({
+                type,
+                id: userId,
+                index: 'positions',
+                body: {
+                  price,
+                  volume: newVolume,
+                }
+              });
+            }
             result.update({
               price: (newInfo.priceSum / orders.length),
               volume: newInfo.volSum,
@@ -146,3 +150,5 @@ module.exports = ({ userId, price, volume, type }) => {
   // update values
   // TODO: Send message to SQS with profit info
 };
+
+export default updatePosition;

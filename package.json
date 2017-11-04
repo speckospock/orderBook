@@ -2,11 +2,11 @@
   "name": "orderbook",
   "version": "1.0.0",
   "description": "The project description",
-  "main": "src/index.js",
+  "main": "src/server/index.js",
   "scripts": {
-    "test": "mocha",
+    "test": "export NODE_ENV=test && mocha --compilers .:babel-mocha-es6-compiler",
     "build": "webpack -d --watch",
-    "start": "set NODE_ENV=development && node dist/bundle.js"
+    "start": "export NODE_ENV=development && node dist/bundle.js"
   },
   "repository": {
     "type": "git",
@@ -31,6 +31,7 @@
     "sqs-consumer": "^3.8.0"
   },
   "devDependencies": {
+    "babel-mocha-es6-compiler": "^0.1.0",
     "babel-preset-env": "^1.6.1",
     "chai": "^4.1.2",
     "mocha": "^4.0.1",

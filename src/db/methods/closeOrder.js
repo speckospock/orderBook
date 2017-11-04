@@ -1,7 +1,7 @@
-const { resolvePosition } = require('.');
+import { resolvePosition } from '.';
 
 //destroy an order in the DB and return remaining volume to be processed
-module.exports = (order, incomingVol, type) => {
+const closeOrder = (order, incomingVol, type) => {
   let { userId, volume, price } = order.dataValues;
   // console.log('RECEIVED: ', userId, volume, price, incomingVol);
   // if the order is partially fulfilled, resolve the position and update the order
@@ -17,3 +17,5 @@ module.exports = (order, incomingVol, type) => {
     return incomingVol - volume;
   }
 };
+
+export default closeOrder;

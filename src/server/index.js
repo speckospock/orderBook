@@ -1,8 +1,13 @@
 process.env.NODE_ENV = 'development';
 
 const AWS = require('aws-sdk');
-const { Buy, Sell, Pair } = require('../db');
-const { topBuys, topSells, processOrder, generateFakeData } = require('../db/methods');
+// const { Buy, Sell, Pair, Position } = require('../db');
+import { topBuys, topSells, processOrder, generateFakeData } from '../db/methods';
+
+// console.log('from Server: ', Sell);
+topBuys(console.log);
+
+// processOrder({order: {userId: 1, volume: 1, price: 0.2}, type: 'BUY'});
 
 const sqsUrls = {
   ordersRequest: 'https://sqs.us-west-2.amazonaws.com/179737091880/ordersrequest.fifo',
@@ -51,8 +56,8 @@ app.start();
 // let fakeData = generateFakeData(1000, 1.2);
 // console.timeEnd('fakeData');
 
-Buy
-  .sync()
+// Buy
+//   .sync()
   // .then(() => Buy.min('price'))
   // .then(res => console.log(res));
   // .then(() => {
@@ -77,8 +82,8 @@ Buy
 // .then(() => Buy.max('price'))
 // .then(result => console.log('max: ', result));
 
-Sell
-  .sync()
+// Sell
+//   .sync()
   // .then(() => resolveOrder({ id: 2516623, type: 'SELL' }, { vol: 220 }));
 // .then(() => console.log('startSort'))
   // .then(() => {
