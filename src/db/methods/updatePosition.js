@@ -26,14 +26,21 @@ const updatePosition = ({ userId, price, volume, type }) => {
         // console.log('calculated volume: ', newInfo.volSum);
 
         // update the position to reflect the calculated changes in price and volume
-        Position.update({
+        elasticClient.index({
+          type,
+          id: userId,
+          index: 'positions',
+          body: {
+            price: parseFloat((newInfo.priceSum / (result.dataValues.orders.length + 1)).toFixed(4)),
+            volume: newInfo.volSum,
+          }
+        });
+        return Position.update({
           price: parseFloat((newInfo.priceSum / (result.dataValues.orders.length + 1)).toFixed(4)),
           volume: newInfo.volSum,
           orders: [...result.dataValues.orders, { price, volume }],
         }, {
           where: { userId },
-        }).then(res => {
-          // console.log(res);
         });
 
       //if position type is different, we need to resolve order
@@ -64,7 +71,7 @@ const updatePosition = ({ userId, price, volume, type }) => {
                 }
               });
             }
-            result.update({
+            return result.update({
               price,
               type,
               volume: newVolume,
@@ -72,7 +79,7 @@ const updatePosition = ({ userId, price, volume, type }) => {
             });
           //if no remainder, simply destroy the position
           } else {
-            result.destroy();
+            return result.destroy();
           }
         } else {
           // create a shallow copy of the orders array to work with
@@ -133,16 +140,14 @@ const updatePosition = ({ userId, price, volume, type }) => {
                 }
               });
             }
-            result.update({
+            return result.update({
               price: (newInfo.priceSum / orders.length),
               volume: newInfo.volSum,
               orders: [...orders],
-            }).then(res => {
-              // console.log(res.dataValues);
             });
           // if the position was completely fulfilled, destroy it
           } else {
-            result.destroy();
+            return result.destroy();
           }
         }
       }
