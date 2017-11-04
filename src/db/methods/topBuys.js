@@ -1,7 +1,7 @@
 import { Buy, sequelize } from '..';
 
 // Find the first 10 open orders in the Buy table
-const topBuys = callback => {
+export const topBuys = callback => {
   // console.log('starting sort');
   return Buy
     .max('price')
@@ -12,5 +12,3 @@ const topBuys = callback => {
     }))
     .then(results => callback(results));
 };
-
-export default topBuys;

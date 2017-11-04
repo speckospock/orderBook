@@ -4,7 +4,7 @@ import { topBuys, topSells, resolvePosition, closeOrder } from '.';
 // console.log('HI SELL: ', Sell);
 
 // Handle an incoming order from the queue/HTTP request
-const processOrder = ({ type, order }) => {
+export const processOrder = ({ type, order }) => {
   let { userId, volume, price } = order;
   // console.log('SAW', volume, price);
   // if the order is to buy, try to find a matching sell order or add it to the buy list
@@ -87,5 +87,3 @@ const processOrder = ({ type, order }) => {
     });
   }
 };
-
-export default processOrder;

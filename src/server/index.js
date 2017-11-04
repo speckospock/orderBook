@@ -5,7 +5,7 @@ const AWS = require('aws-sdk');
 import { topBuys, topSells, processOrder, generateFakeData } from '../db/methods';
 
 // console.log('from Server: ', Sell);
-topBuys(console.log);
+// topBuys(console.log);
 
 // processOrder({order: {userId: 1, volume: 1, price: 0.2}, type: 'BUY'});
 

@@ -10,24 +10,35 @@
 //   clearDB: require('./clearDB'),
 // };
 
-import generateFakeData from './generateFakeData';
-import topBuys from './topBuys';
-import topSells from './topSells';
-import openPosition from './openPosition';
-import updatePosition from './updatePosition';
-import resolvePosition from './resolvePosition';
-import closeOrder from './closeOrder';
-import processOrder from './processOrder';
-import clearDB from './clearDB';
+// import generateFakeData from './generateFakeData';
+// import topBuys from './topBuys';
+// import topSells from './topSells';
+// import openPosition from './openPosition';
+// import updatePosition from './updatePosition';
+// import resolvePosition from './resolvePosition';
+// import closeOrder from './closeOrder';
+// import processOrder from './processOrder';
+// import clearDB from './clearDB';
 
-export {
-  generateFakeData,
-  topBuys,
-  topSells,
-  openPosition,
-  updatePosition,
-  resolvePosition,
-  closeOrder,
-  processOrder,
-  clearDB,
-};
+// export {
+//   generateFakeData,
+//   topBuys,
+//   topSells,
+//   openPosition,
+//   updatePosition,
+//   resolvePosition,
+//   closeOrder,
+//   processOrder,
+//   clearDB,
+// };
+
+export { generateFakeData } from './generateFakeData';
+export { topBuys } from './topBuys';
+export { topSells } from './topSells';
+export { openPosition } from './openPosition';
+export { updatePosition } from './updatePosition';
+export { resolvePosition } from './resolvePosition';
+export { closeOrder } from './closeOrder';
+export { processOrder } from './processOrder';
+export { clearDB } from './clearDB';
+

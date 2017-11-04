@@ -2,7 +2,7 @@ import { Position } from '..';
 import { elasticClient } from '../../../workers/elasticSetup';
 
 // Modify an existing position
-const updatePosition = ({ userId, price, volume, type }) => {
+export const updatePosition = ({ userId, price, volume, type }) => {
   // console.log('type: ', type);
   // convert the type name
   type = (type === 'BUY') ? 'long' : 'short';
@@ -155,5 +155,3 @@ const updatePosition = ({ userId, price, volume, type }) => {
   // update values
   // TODO: Send message to SQS with profit info
 };
-
-export default updatePosition;

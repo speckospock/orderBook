@@ -5,7 +5,7 @@ const PD = require('probability-distributions');
  
  * @param {int} quantity Every 1 quantity = 1000 data points
  */
-const generateFakeData = (quantity, initialPrice = 1 + (Math.random() * 0.4)) => {
+export const generateFakeData = (quantity, initialPrice = 1 + (Math.random() * 0.4)) => {
   let results = [];
   let bids = [];
   let asks = [];
@@ -34,5 +34,3 @@ const generateFakeData = (quantity, initialPrice = 1 + (Math.random() * 0.4)) =>
 
   return { bids, asks, initialPrice };
 };
-
-export default generateFakeData;

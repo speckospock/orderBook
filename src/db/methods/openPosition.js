@@ -2,7 +2,7 @@ import { Position } from '..';
 import { elasticClient } from '../../../workers/elasticSetup';
 
 // Open a new user position
-const openPosition = ({userId, price, volume, type}) => {
+export const openPosition = ({userId, price, volume, type}) => {
   type = (type === 'BUY') ? 'long' : 'short';
   // create a position w/ obj passed in
   // save to DB
@@ -25,5 +25,3 @@ const openPosition = ({userId, price, volume, type}) => {
     orders: [{ price, volume }],
   });
 };
-
-export default openPosition;
