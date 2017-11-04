@@ -1,9 +1,6 @@
 const Sequelize = require('sequelize');
-const elasticsearch = require('elasticsearch');
 const { orderSchema, pairSchema, positionSchema } = require('./schemas');
 const { POSTGRES: { USER, PASSWORD, HOST }} = require('../../config');
-const { generateFakeData } = require('./methods');
-const { elasticClient } = require('../../workers/elasticSetup');
 
 //instrument, time, bid, ask, bid_vol, ask_vol
 //bid/ask vol are the total of all new orders w/in that time period plus the total of all resolved orders w/in that time period
