@@ -22,7 +22,7 @@ export const updatePrice = () => {
         sqs.sendMessage({
           DelaySeconds: 0,
           QueueUrl: sqsUrls.priceQueue,
-          MessageBody: JSON.stringify(message),
+          MessageBody: JSON.stringify({ payload: message }),
         }, (err, data) => {
           if (err) {
             console.log(err);

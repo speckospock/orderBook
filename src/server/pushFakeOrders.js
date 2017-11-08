@@ -78,4 +78,4 @@ const generateOrders = () => {
 //   });
 // generateOrders();
 
-setInterval(generateOrders, 100);
+setInterval(generateOrders, 1000);
