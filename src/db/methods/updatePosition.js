@@ -135,8 +135,8 @@ export const updatePosition = ({ userId, price, volume, type }) => {
                 id: userId,
                 index: 'positions',
                 body: {
-                  price,
-                  volume: newVolume,
+                  price: (newInfo.priceSum / orders.length),
+                  volume: newInfo.volSum,
                 }
               });
             }

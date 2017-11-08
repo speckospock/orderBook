@@ -8,11 +8,11 @@ export const resolvePosition = ({userId, price, volume}, type) => {
     .then(result => {
       // if not, create a position for that user
       if (!result) {
-        // console.log('Got to OPEN POSITION');
+        console.log('Got to OPEN POSITION', userId, result);
         openPosition({ userId, price, volume, type });
       // if so, update/close the position as necessary
       } else {
-        // console.log('Got to UPDATE POSITION');
+        console.log('Got to UPDATE POSITION', userId, result);
         updatePosition({ userId, price, volume, type });
       }
     });

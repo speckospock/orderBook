@@ -7,3 +7,4 @@ export { resolvePosition } from './resolvePosition';
 export { closeOrder } from './closeOrder';
 export { processOrder } from './processOrder';
 export { clearDB } from './clearDB';
+export { updatePrice } from './updatePrice';

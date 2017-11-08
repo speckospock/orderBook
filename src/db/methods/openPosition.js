@@ -17,6 +17,10 @@ export const openPosition = ({userId, price, volume, type}) => {
       }
     });
   }
+  // console.log('for validation: ', `userId: ${userId}
+  // price: ${price}
+  // volume: ${volume}
+  // type: ${type}`);
   return Position.create({
     userId,
     price,

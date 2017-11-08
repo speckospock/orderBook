@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
-const { generateFakeData } = require('../db/methods');
 const { elasticClient } = require('../../workers/elasticSetup');
+const { generateFakeData } = require('../db/methods/generateFakeData');
 
 const sqsUrls = {
   ordersRequest: 'https://sqs.us-west-2.amazonaws.com/179737091880/ordersrequest.fifo',
@@ -16,8 +16,10 @@ let messageId = 20;
 const randomOrder = price => {
   let userId = 222;
   let types = ['BUY', 'SELL'];
-  let type = types[Math.round(Math.random())];
-  let volume = parseInt(Math.random() * 1000);
+  // let type = types[Math.round(Math.random())];
+  let type = 'SELL';
+  // let volume = parseInt(Math.random() * 1000);
+  let volume = 10000;
   if (type === 'BUY') {
     price = (price + (Math.random() * 0.1)).toFixed(4);
   } else {

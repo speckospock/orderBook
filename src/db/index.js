@@ -1,10 +1,14 @@
 const Sequelize = require('sequelize');
 const { orderSchema, pairSchema, positionSchema } = require('./schemas');
-const { POSTGRES: { USER, PASSWORD, HOST }} = require('../../config');
+let { POSTGRES: { USER, PASSWORD, HOST }} = require('../../config');
 
 //instrument, time, bid, ask, bid_vol, ask_vol
 //bid/ask vol are the total of all new orders w/in that time period plus the total of all resolved orders w/in that time period
 //in other words, vol movements
+
+USER = process.env.PGUSER || USER;
+PASSWORD = process.env.PGPASSWORD || PASSWORD;
+HOST = process.env.PGHOST || HOST;
 
 /////////////////////////////
 // Sequelize setup/DB init //
@@ -19,6 +23,7 @@ console.log(selectedDB);
 // setup Postgres
 const sequelize = new Sequelize(selectedDB, USER, PASSWORD, {
   host: HOST,
+  port: 5432,
   dialect: 'postgres',
   // sync: { force: true },
   syncOnAssociation: true,
@@ -88,6 +93,14 @@ Sell.sync();
 
 // console.log('From Index: ', Buy);
 
+let cache = {
+  instrument: 'EURUSD',
+  bid: null,
+  ask: null,
+  bid_vol: 0,
+  ask_vol: 0,
+};
+
 //export DB tables
 export {
   Buy,
@@ -95,4 +108,5 @@ export {
   Pair,
   Position,
   sequelize,
+  cache,
 };

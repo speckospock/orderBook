@@ -37,53 +37,43 @@ describe('hooks', function() {
   describe('orders', function() {
     // processOrder({order: {userId: 1, volume: 1, price: 1.0}, type: 'BUY'});
     describe('topBuys function', function() {
-      it('should correctly return the first 10 BUY orders', function(done) {
-        topBuys(top => expect(top.length).to.equal(10))
-          .then(() => done())
-          .catch(err => done(err));
+      it('should correctly return the first 10 BUY orders', function() {
+        return topBuys(top => expect(top.length).to.equal(10));
       });
-      it('should return the results in FIFO order', function(done) {
-        topBuys(top => {
+      it('should return the results in FIFO order', function() {
+        return topBuys(top => {
           expect(top[0].userId).to.equal(1);
-          expect(top[9].userId).to.equal(10);
-        }).then(() => done())
-          .catch(err => done(err));
+          expect(top[1].userId).to.equal(2);
+        });
       });
     });
 
     describe('topSells function', function() {
-      it('should correctly return the first 10 SELL orders', function(done) {
-        topSells(top => expect(top.length).to.equal(10))
-          .then(() => done())
-          .catch(err => done(err));
+      it('should correctly return the first 10 SELL orders', function() {
+        return topSells(top => expect(top.length).to.equal(10));
       });
-      it('should return the results in FIFO order', function(done) {
-        topSells(top => {
+      it('should return the results in FIFO order', function() {
+        return topSells(top => {
           expect(top[0].userId).to.equal(1);
-          expect(top[9].userId).to.equal(10);
-        }).then(() => done())
-          .catch(err => done(err));
+          expect(top[1].userId).to.equal(2);
+        });
       });
     });
 
     describe('processOrder', function() {
-      it('should place an order in the list correctly', function(done) {
+      it('should place an order in the list correctly', function() {
         processOrder({type: 'BUY', order: {userId: 666, price: 1, volume: 1}});
-        Buy.min('price')
+        return Buy.min('price')
           .then(res => {
             expect(res).to.equal(1);
-          })
-          .then(() => done())
-          .catch(err => done(err));
+          });
       });
     });
 
     describe('closeOrder', function() {
-      it('should properly close an order', function(done) {
-        Buy.find({ where: { userId: 1 }})
-          .then(res => expect(closeOrder(res, 1, 'BUY').to.equal(0)))
-          .then(() => done())
-          .catch(err => done(err));
+      it('should properly close an order', function() {
+        return Buy.find({ where: { userId: 1 }})
+          .then(res => expect(closeOrder(res, 1, 'BUY').to.equal(0)));
       });
     });
   });

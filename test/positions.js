@@ -16,11 +16,7 @@ import { openPosition, updatePosition } from '../src/db/methods';
 describe('hooks', function() {
   
   beforeEach(function(done) {
-    Buy.findAll()
-      .then(res => res.forEach(row => row.destroy()))
-      .then(() => Sell.findAll())
-      .then(res => res.forEach(row => row.destroy()))
-      .then(() => Position.findAll())
+    Position.findAll()
       .then(res => res.forEach(row => row.destroy()))
       .then(() => done());
   });

@@ -2,12 +2,26 @@ process.env.NODE_ENV = 'development';
 
 const AWS = require('aws-sdk');
 // const { Buy, Sell, Pair, Position } = require('../db');
-import { topBuys, topSells, processOrder, generateFakeData } from '../db/methods';
+import { topBuys, topSells, processOrder, generateFakeData, updatePrice } from '../db/methods';
+import { Buy, Sell, Pair, Position } from '../db';
+
+// let { bids, asks } = generateFakeData(1, 1.2);
+// Buy.bulkCreate(bids);
+// Sell.bulkCreate(asks);
+// Pair.create({name: 'EURUSD'});
 
 // console.log('from Server: ', Sell);
 // topBuys(console.log);
 
 // processOrder({order: {userId: 1, volume: 1, price: 0.2}, type: 'BUY'});
+
+//to 
+// {payload: {instrument, time, bid, ask, bid_vol, ask_vol}}
+// time: ISO string of time object
+// new Date().toISOString();
+// bid_vol, ask_vol are vol of fulfilled transactions since last price update
+
+updatePrice();
 
 const sqsUrls = {
   ordersRequest: 'https://sqs.us-west-2.amazonaws.com/179737091880/ordersrequest.fifo',
