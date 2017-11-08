@@ -21,17 +21,23 @@ import { Buy, Sell, Pair, Position } from '../db';
 // new Date().toISOString();
 // bid_vol, ask_vol are vol of fulfilled transactions since last price update
 
-updatePrice();
+// updatePrice();
 
-const sqsUrls = {
+// let { bids, asks } = generateFakeData(10, 1.2);
+// Buy.bulkCreate(bids).then(res => console.log(res));
+// Sell.bulkCreate(asks).then(res => console.log(res));
+
+export const sqsUrls = {
   ordersRequest: 'https://sqs.us-west-2.amazonaws.com/179737091880/ordersrequest.fifo',
+  fulfilledorders: 'https://sqs.us-west-1.amazonaws.com/858778373274/FulfilledOrderQueue',
+  priceQueue: 'https://sqs.us-west-1.amazonaws.com/287396276472/SQS_PRICES_QUEUE'
 };
 
 //TODO: setup connection to SQS
 // Load credentials and set the region from the JSON file
 AWS.config.loadFromPath('./config.json');
 
-const sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
+export const sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
 
 const Consumer = require('sqs-consumer');
 

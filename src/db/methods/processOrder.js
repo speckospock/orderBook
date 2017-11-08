@@ -12,10 +12,11 @@ export const processOrder = ({ type, order }) => {
     // console.log('HI BUY');
     // load the next 10 sell orders in line
     topSells(top => {
-      console.log('FOUND: ', top[0]);
+      // console.log('FOUND: ', top[0]);
       try {
         // if price is less than the best sell price listed, we know there's no match
-        if (price < top[0].price) {
+        // alternatively, if there's no results, this is the first order
+        if (!top || price < top[0].price) {
           // console.log('below best price, creating new order');
           return Buy.create(order);
         // if price is greater than the best sell price listed, we match the order
@@ -57,9 +58,10 @@ export const processOrder = ({ type, order }) => {
     // load the next 10 buy orders in line
     topBuys(top => {
       try {
-        console.log('FOUND: ', top[0]);
+        // console.log('FOUND: ', top[0]);
         // if price is greater than the best buy price listed, we know there's no match
-        if (price > top[0].price) {
+        // alternatively, if there's no results, this is the first order
+        if (!top || price > top[0].price) {
           // console.log('above best price, creating new order');        
           return Sell.create(order);
         // if price is less than the best buy price listed, we match the order

@@ -1,5 +1,6 @@
 import { Position } from '..';
 import { elasticClient } from '../../../workers/elasticSetup';
+import { sqs, sqsUrls } from '../../server';
 
 // Modify an existing position
 export const updatePosition = ({ userId, price, volume, type }) => {
@@ -55,7 +56,23 @@ export const updatePosition = ({ userId, price, volume, type }) => {
             profit = parseFloat(((result.dataValues.price - price) * result.dataValues.volume).toFixed(4));
           }
           //report the profit. TODO: send to message bus
-          // console.log('profit: ', profit);
+          sqs.sendMessage({
+            DelaySeconds: 0,
+            QueueUrl: sqsUrls.fulfilledorders,
+            MessageBody: JSON.stringify({
+              userId,
+              profit,
+              pair: 'EURUSD',
+            }),
+          }, (err, data) => {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log(data);
+            }
+          });
+
+          console.log('profit: ', profit);
           //create a reverse position with the unresolved volume if there's a remainder
           if (volume > result.dataValues.volume) {
             //calculate the new sum of order prices and volumes to determine new overall position
@@ -119,6 +136,21 @@ export const updatePosition = ({ userId, price, volume, type }) => {
               }
             }
           }
+          sqs.sendMessage({
+            DelaySeconds: 0,
+            QueueUrl: sqsUrls.fulfilledorders,
+            MessageBody: JSON.stringify({
+              userId,
+              profit,
+              pair: 'EURUSD',
+            }),
+          }, (err, data) => {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log(data);
+            }
+          });
           console.log('profit: ', profit);
           // if the position was not completely fulfilled, calculate new values based on partial fulfillment
           if (orders.length) {

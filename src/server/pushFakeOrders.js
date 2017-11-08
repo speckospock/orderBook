@@ -16,10 +16,10 @@ let messageId = 20;
 const randomOrder = price => {
   let userId = 222;
   let types = ['BUY', 'SELL'];
-  // let type = types[Math.round(Math.random())];
-  let type = 'SELL';
-  // let volume = parseInt(Math.random() * 1000);
-  let volume = 10000;
+  let type = types[Math.round(Math.random())];
+  // let type = 'SELL';
+  let volume = parseInt(Math.random() * 1000);
+  // let volume = 10000;
   if (type === 'BUY') {
     price = (price + (Math.random() * 0.1)).toFixed(4);
   } else {
@@ -78,4 +78,4 @@ const generateOrders = () => {
 //   });
 // generateOrders();
 
-setInterval(generateOrders, 1000);
+setInterval(generateOrders, 100);
