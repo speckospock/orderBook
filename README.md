@@ -1,6 +1,6 @@
 # Project Name
 
-The project description
+MacD - a project to fully simulate the back-end API of a foreign exchange (Forex) marketplace.
 
 ## Roadmap
 
@@ -18,19 +18,12 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
     1. [Installing Dependencies](#installing-dependencies)
     1. [Tasks](#tasks)
 
-## Usage
-
-> TODO: fill in Usage
 
 ## Requirements
 
 - Node 8.3.x
 - Postgresql
 - Sequelize
-
-## Other Information
-
-(TODO: fill this out with details about your project. Suggested ideas: architecture diagram, schema, and any other details from your app plan that sound interesting.)
 
 
 
